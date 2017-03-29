@@ -5,7 +5,6 @@ using UnityEngine;
 public class SimpleTeleport : MonoBehaviour {
 
 	Ray ray;
-	RaycastHit groundCheck;
     Rigidbody myRB;
 
 
@@ -20,25 +19,12 @@ public class SimpleTeleport : MonoBehaviour {
     }
 
     void FixedUpdate () {
+		//This code detects if a surface is close enough and if there is then it will remove the rotation
+		//constraints so that the disk can tilt a bit before it falls. It's more realistic that way.
         ray = new Ray (this.transform.position, Vector3.down);
 
-		if (Physics.Raycast (ray, out groundCheck, length) == true) {
-
+		if (Physics.Raycast (ray, length) == true) {
             myRB.constraints = RigidbodyConstraints.None;
-
-			if (groundCheck.collider.tag == "Ground") {
-				//Getting to here means that the disk is on the floor. Now check for input.
-				if (SteamVR.active == false) {
-					if (Input.GetKeyDown (KeyCode.Space)) {
-						player.transform.position = this.transform.position;
-					}
-				} else {
-					if (se.VRHand1.controller.GetPressDown (Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger) ||
-						se.VRHand2.controller.GetPressDown (Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger)) {
-						player.transform.position = this.transform.position;
-					}
-				}
-			}
 		}
         else {
             myRB.constraints = RigidbodyConstraints.FreezeRotationX;
@@ -46,5 +32,21 @@ public class SimpleTeleport : MonoBehaviour {
         }
 
         Debug.DrawRay (this.transform.position, Vector3.down * length);
+	}
+
+	void OnTriggerStay (Collider other) {
+		if (other.CompareTag ("Ground")) {
+			//Getting to here means that the disk is on the floor. Now check for input.
+			if (SteamVR.active == false) {
+				if (Input.GetKeyDown (KeyCode.Space)) {
+					player.transform.position = this.transform.position;
+				}
+			} else {
+				if (se.VRHand1.controller.GetPressDown (Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger) ||
+					se.VRHand2.controller.GetPressDown (Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger)) {
+					player.transform.position = this.transform.position;
+				}
+			}
+		}
 	}
 }
