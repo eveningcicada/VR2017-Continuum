@@ -35,13 +35,6 @@ public class SwitchEnvironment : MonoBehaviour {
 				}
 			}
 
-			if (VRHand1.controller.GetPressDown (Valve.VR.EVRButtonId.k_EButton_Grip)) {
-				VRHand1.AttachObject(disc);
-			}
-			if (VRHand2.controller.GetPressDown (Valve.VR.EVRButtonId.k_EButton_Grip)) {
-				VRHand2.AttachObject(disc);
-			}
-
 		} else {
 			if (fallbackHand.GetStandardInteractionButtonDown ()) {
 				if (room1.activeInHierarchy == false) {
