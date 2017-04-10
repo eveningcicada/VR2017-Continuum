@@ -8,21 +8,28 @@ public class FallDetect : MonoBehaviour {
 	[SerializeField] GameObject player;
 	[SerializeField] GameObject disk;
 
+	private SteamVR_Camera _hmd;
+	public LayerMask ignoreLayer;
+
 	// Use this for initialization
 	void Start () {
-		
+		_hmd = FindObjectOfType<SteamVR_Camera> ();
+
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		
-	}
+		Ray groundCheck = new Ray (_hmd.transform.position, Vector3.down);
+		RaycastHit hitInfo;
 
-	void OnTriggerEnter (Collider other) {
-		if (other.name == "BodyCollider") {
-            StartCoroutine(Dead());
+		if (Physics.SphereCast (groundCheck, .5f, out hitInfo, ignoreLayer)) {
+			
+		} else {
+			StartCoroutine (Dead ());
 		}
 	}
+
+
 
     IEnumerator Dead() {
         SteamVR_Fade.Start (Color.black, 1f);

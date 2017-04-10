@@ -14,6 +14,8 @@ public class Level_CityWindowLift : MonoBehaviour {
 	static float moveSpeed = 1;
 	float height;
 
+	public float newHeight;
+
 	// Use this for initialization
 	void Start () {
 		height = lift1.transform.position.y;
@@ -21,15 +23,13 @@ public class Level_CityWindowLift : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		float newHeight = Remap (this.transform.position.x, sliderMin, sliderMax, height - heightRange, height + heightRange);
+		newHeight = Remap (this.transform.position.x, sliderMin, sliderMax, height - heightRange, height + heightRange);
 		//We want some animation of the past lift moving up and down
 		if (lift1.position.y < newHeight) {
-			Debug.Log ("moveUp");
 			Vector3 temp = new Vector3 (lift1.position.x, lift1.position.y + moveSpeed * Time.deltaTime, lift1.position.z);
 			lift1.position = temp;
 		}
 		if (lift1.position.y > newHeight) {
-			Debug.Log ("moveDown");
 			Vector3 temp = new Vector3 (lift1.position.x, lift1.position.y - moveSpeed * Time.deltaTime, lift1.position.z);
 			lift1.position = temp;
 		}
@@ -39,19 +39,13 @@ public class Level_CityWindowLift : MonoBehaviour {
 			lift1.position = temp;
 		}
 
-		//The future lift will not be animated. Your changes in the past have put it as is in the future
-		Vector3 temp2 = new Vector3 (lift2.position.x, newHeight, lift2.position.z);
-		lift2.position = temp2;
-
 		//Reset the slider if it moves past the min and max values.
 		//They'll be put back just before min and max
 		if (this.transform.position.x > sliderMax) {
-			Debug.Log ("pastMax");
 			Vector3 temp = new Vector3 (sliderMax - 0.01f, this.transform.position.y, this.transform.position.z);
 			this.transform.position = temp;
 		}
 		if (this.transform.position.x < sliderMin) {
-			Debug.Log ("pastMin");
 			Vector3 temp = new Vector3 (sliderMin + 0.01f, this.transform.position.y, this.transform.position.z);
 			this.transform.position = temp;
 		}

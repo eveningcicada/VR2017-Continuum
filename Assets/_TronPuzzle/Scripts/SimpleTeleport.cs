@@ -5,6 +5,7 @@ using UnityEngine;
 public class SimpleTeleport : MonoBehaviour {
 
 	Ray ray;
+	Ray groundCheck;
     Rigidbody myRB;
 
 
@@ -31,22 +32,26 @@ public class SimpleTeleport : MonoBehaviour {
             myRB.constraints = RigidbodyConstraints.FreezeRotationZ;
         }
 
-        Debug.DrawRay (this.transform.position, Vector3.down * length);
-	}
 
-	void OnTriggerStay (Collider other) {
-		if (other.CompareTag ("Ground")) {
+		groundCheck = new Ray (this.transform.position, Vector3.down);
+		RaycastHit hitInfo;
+		Physics.SphereCast (groundCheck, 0.2f, out hitInfo, 0.2f);
+
+		if (hitInfo.collider.CompareTag ("Ground")) {
 			//Getting to here means that the disk is on the floor. Now check for input.
 			if (SteamVR.active == false) {
 				if (Input.GetKeyDown (KeyCode.Space)) {
 					player.transform.position = this.transform.position;
 				}
 			} else {
-				if (se.VRHand1.controller.GetPressDown (Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger) ||
-					se.VRHand2.controller.GetPressDown (Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger)) {
+				if (se.VRHand1.controller.GetPressDown (Valve.VR.EVRButtonId.k_EButton_Grip) ||
+					se.VRHand2.controller.GetPressDown (Valve.VR.EVRButtonId.k_EButton_Grip)) {
 					player.transform.position = this.transform.position;
 				}
 			}
 		}
+
+		Debug.DrawRay (this.transform.position, Vector3.down * 0.2f, Color.black);
+		
 	}
 }
