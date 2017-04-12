@@ -9,8 +9,15 @@ public class SimpleTeleport : MonoBehaviour {
 
 	SwitchEnvironment se;
 	[SerializeField] GameObject player;
+	private GameObject _hmd;
 
     void Start() {
+		if (SteamVR.active == true) {
+			_hmd = GameObject.Find ("VRCamera (eye)");;
+		} else {
+			_hmd = GameObject.Find ("FallbackObjects");
+		}
+
         se = GameObject.Find("GameManager").GetComponent<SwitchEnvironment>();
         myRB = GetComponent<Rigidbody>();
     }
@@ -37,12 +44,28 @@ public class SimpleTeleport : MonoBehaviour {
 				//Getting to here means that the disk is on the floor. Now check for input.
 				if (SteamVR.active == false) {
 					if (Input.GetKeyDown (KeyCode.Space)) {
-						player.transform.position = hitInfo.point;
+						Vector3 temp = hitInfo.point;
+						temp.x += _hmd.transform.localPosition.x;
+						temp.z += _hmd.transform.localPosition.z;
+
+						player.transform.position = temp;
+
+
+						Vector3 temp2 = new Vector3 (0f, _hmd.transform.localPosition.y, 0f);
+						_hmd.transform.localPosition = temp2;
 					}
 				} else {
 					if (se.VRHand1.controller.GetPressDown (Valve.VR.EVRButtonId.k_EButton_Grip) ||
 					   se.VRHand2.controller.GetPressDown (Valve.VR.EVRButtonId.k_EButton_Grip)) {
-						player.transform.position = hitInfo.point;
+						Vector3 temp = hitInfo.point;
+						temp.x -= _hmd.transform.localPosition.x;
+						temp.z -= _hmd.transform.localPosition.z;
+
+						player.transform.position = temp;
+
+
+						Vector3 temp2 = new Vector3 (0f, _hmd.transform.localPosition.y, 0f);
+						_hmd.transform.localPosition = temp2;
 					}
 				}
 			}
