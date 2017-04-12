@@ -4,11 +4,8 @@ using UnityEngine;
 
 public class SimpleTeleport : MonoBehaviour {
 
-	Ray ray;
-    Rigidbody myRB;
-
-
-    public float length = 0f;
+	Rigidbody myRB;
+	public float length = 0.2f;
 
 	SwitchEnvironment se;
 	[SerializeField] GameObject player;
@@ -21,9 +18,9 @@ public class SimpleTeleport : MonoBehaviour {
     void FixedUpdate () {
 		//This code detects if a surface is close enough and if there is then it will remove the rotation
 		//constraints so that the disk can tilt a bit before it falls. It's more realistic that way.
-        ray = new Ray (this.transform.position, Vector3.down);
+        Ray tiltCheck = new Ray (this.transform.position, Vector3.down);
 
-		if (Physics.Raycast (ray, length) == true) {
+		if (Physics.Raycast (tiltCheck, 1f) == true) {
             myRB.constraints = RigidbodyConstraints.None;
 		}
         else {
@@ -31,22 +28,26 @@ public class SimpleTeleport : MonoBehaviour {
             myRB.constraints = RigidbodyConstraints.FreezeRotationZ;
         }
 
-        Debug.DrawRay (this.transform.position, Vector3.down * length);
-	}
 
-	void OnTriggerStay (Collider other) {
-		if (other.CompareTag ("Ground")) {
-			//Getting to here means that the disk is on the floor. Now check for input.
-			if (SteamVR.active == false) {
-				if (Input.GetKeyDown (KeyCode.Space)) {
-					player.transform.position = this.transform.position;
-				}
-			} else {
-				if (se.VRHand1.controller.GetPressDown (Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger) ||
-					se.VRHand2.controller.GetPressDown (Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger)) {
-					player.transform.position = this.transform.position;
+		Ray groundCheck = new Ray (this.transform.position, Vector3.down);
+		RaycastHit hitInfo;
+
+		if (Physics.Raycast (groundCheck, out hitInfo, length) == true) {
+			if (hitInfo.collider.CompareTag ("Ground")) {
+				//Getting to here means that the disk is on the floor. Now check for input.
+				if (SteamVR.active == false) {
+					if (Input.GetKeyDown (KeyCode.Space)) {
+						player.transform.position = hitInfo.point;
+					}
+				} else {
+					if (se.VRHand1.controller.GetPressDown (Valve.VR.EVRButtonId.k_EButton_Grip) ||
+					   se.VRHand2.controller.GetPressDown (Valve.VR.EVRButtonId.k_EButton_Grip)) {
+						player.transform.position = hitInfo.point;
+					}
 				}
 			}
 		}
+
+		//Debug.DrawRay (this.transform.position, Vector3.down * length);
 	}
 }
