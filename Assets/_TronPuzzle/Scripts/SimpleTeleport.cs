@@ -38,6 +38,7 @@ public class SimpleTeleport : MonoBehaviour {
 				if (SteamVR.active == false) {
 					if (Input.GetKeyDown (KeyCode.Space)) {
 						player.transform.position = hitInfo.point;
+                        Debug.Log("help");
 					}
 				} else {
 					if (se.VRHand1.controller.GetPressDown (Valve.VR.EVRButtonId.k_EButton_Grip) ||
