@@ -16,6 +16,11 @@ public class Generator : MonoBehaviour {
 	// Use this for initialization
 	void Start ()
 	{
+		//The parameters we put in = the size of the platform. But the script spawns cubes from -groundX
+		//to groundX. Same for groundZ. Which doubles the width and length.
+		groundX /= 2;
+		groundZ /= 2;
+
 		for(int i = 0; i < numDecals; i++)
 		{
 			Transform decal = Instantiate(decalPrefab) as Transform;
@@ -26,7 +31,9 @@ public class Generator : MonoBehaviour {
 
 			decal.localScale = new Vector3(randX, randY, randZ);
 			decal.position = new Vector3(Random.Range(-groundX, groundX), groundDepth, Random.Range(-groundZ, groundZ));
+			decal.position += this.transform.position;
 			decal.parent = this.transform;
+			decal.tag = this.gameObject.tag;
 		}
 	}
 	
