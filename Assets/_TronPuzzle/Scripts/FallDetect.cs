@@ -7,6 +7,8 @@ public class FallDetect : MonoBehaviour {
 
 	[SerializeField] GameObject player;
 	[SerializeField] GameObject disk;
+    [SerializeField] GameObject startingPosition;
+    
 
 	private GameObject _hmd;
 	private float length;
@@ -24,6 +26,7 @@ public class FallDetect : MonoBehaviour {
 		//Make the raycast just a bit longer than the height of the player
 		length = _hmd.transform.localPosition.y + 0.1f;
 		//Debug.Log (length);
+
 	}
 	
 	// Update is called once per frame
@@ -45,11 +48,11 @@ public class FallDetect : MonoBehaviour {
         SteamVR_Fade.Start (Color.black, 1f);
         yield return new WaitForSeconds(1f);
         
-		player.transform.position = Vector3.zero;
+		player.transform.position = startingPosition.transform.position;
 		Vector3 temp = new Vector3 (0f, _hmd.transform.localPosition.y, 0f);
 		_hmd.transform.localPosition = temp;
         
-		disk.transform.position = new Vector3(0, 0.531f, 0.815f);
+		disk.transform.position = startingPosition.transform.position;
         SteamVR_Fade.Start (Color.clear, 1f);
     }
 }
