@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Valve.VR.InteractionSystem;
+using UnityEngine.SceneManagement;
 
 public class DiskExitScript : MonoBehaviour {
 
@@ -10,6 +11,7 @@ public class DiskExitScript : MonoBehaviour {
 	public Material keyHole;
 
     bool inHole = false;
+	[SerializeField] int nextLevel;
 
 	// Use this for initialization
 	void Start () {
@@ -35,6 +37,8 @@ public class DiskExitScript : MonoBehaviour {
 				this.transform.rotation = indicator.rotation;
 
                 inHole = true;
+
+				SceneManager.LoadScene (nextLevel);
 			}
 		} else {
 			indicator.gameObject.GetComponent<MeshRenderer> ().material = keyHole;

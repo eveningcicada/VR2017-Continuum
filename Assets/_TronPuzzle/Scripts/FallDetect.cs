@@ -6,7 +6,6 @@ using Valve.VR;
 public class FallDetect : MonoBehaviour {
 
 	[SerializeField] GameObject player;
-	[SerializeField] GameObject disk;
 
 	private GameObject _hmd;
 	private float length;
@@ -48,8 +47,6 @@ public class FallDetect : MonoBehaviour {
 		player.transform.position = Vector3.zero;
 		Vector3 temp = new Vector3 (0f, _hmd.transform.localPosition.y, 0f);
 		_hmd.transform.localPosition = temp;
-        
-		disk.transform.position = new Vector3(0, 0.531f, 0.815f);
         SteamVR_Fade.Start (Color.clear, 1f);
     }
 }
