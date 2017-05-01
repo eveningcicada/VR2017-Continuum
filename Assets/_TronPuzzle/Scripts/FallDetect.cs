@@ -11,7 +11,7 @@ public class FallDetect : MonoBehaviour {
 	private GameObject _hmd;
 	private float length;
 
-	public LayerMask ignoreLayer;
+	public LayerMask collisionLayer;
 
 	// Use this for initialization
 	void Start () {
@@ -31,10 +31,10 @@ public class FallDetect : MonoBehaviour {
 		Ray groundCheck = new Ray (_hmd.transform.position, Vector3.down);
 		RaycastHit hitInfo;
 
-		if (Physics.SphereCast (groundCheck, .5f, out hitInfo, length, ignoreLayer)) {
+		if (Physics.SphereCast (groundCheck, .5f, out hitInfo, length, collisionLayer)) {
 			
 		} else {
-			StartCoroutine (Dead ());
+			StartCoroutine(Dead());
 		}
 
 		//Debug.DrawRay (_hmd.transform.position, Vector3.down * length);
