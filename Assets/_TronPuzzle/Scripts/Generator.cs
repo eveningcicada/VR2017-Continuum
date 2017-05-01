@@ -5,6 +5,7 @@ using UnityEngine;
 public class Generator : MonoBehaviour {
 
 	[SerializeField] Transform decalPrefab;
+    //[SerializeField] Transform decalPrefab2;
 
 	public int numDecals;
 	[Space(10)]
