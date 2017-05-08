@@ -1,176 +1,210 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Timers;
 
 public class Generator : MonoBehaviour {
 
-	[SerializeField] Transform decalPrefab;
+	[SerializeField] DecalPlatform decalPrefab;
 
-	#region Public
-	public enum GroupID
+    #region Public
+    public enum EnvironmentID
+    {
+        Both,
+        Env1,
+        Env2
+    }
+    #endregion
+
+    #region Protected
+    [Space(5)]
+    [SerializeField]
+    protected EnvironmentID environmentID = EnvironmentID.Both;
+
+    [Space(10)]
+    [SerializeField]
+    protected int numDecals;
+
+    [SerializeField]
+    protected Color decalColor;
+
+    [Space(5)]
+    [SerializeField]
+    protected bool usingContraints = false;
+
+    [Space(2)]
+    [SerializeField]
+    protected float bounds_min_x = -2,
+        bounds_max_x = 2,
+        bounds_min_z = -2,
+        bounds_max_z = 2,
+        minDepth_y = -0.1f,
+        maxDepth_y = -0.1f;
+
+    [Space(2)]
+    [SerializeField]
+    protected float decalSize_min_x = 0.25f, 
+        decalSize_max_x = 2.5f,
+        decalSize_min_y = 0.05f, 
+        decalSize_max_y = 0.25f, 
+        decalSize_min_z = 0.25f, 
+        decalSize_max_z = 2.5f;
+
+    protected Renderer myRenderer;
+
+    protected const float DAMPNER = .45f;
+    protected const float MIN_VALUE_OFFSET = .1f;
+    #endregion
+
+    // Use this for initialization
+    void Start ()
 	{
-		GroupZero,
-		GroupOne,
-		GroupTwo
-	}
+        CreatePlatform(usingContraints);
 
-	[Space(5)]
-	public GroupID groupID = GroupID.GroupOne;
-
-	[Space(10)]
-	public int numDecals;
-	public Color decalColor;
-	[Space(5)]
-	public bool usingContraints = false;
-
-	[Space(10)]
-	public float bounds_min_x = -2;
-	public float bounds_max_x = 2;
-	public float bounds_min_z = -2;
-	public float bounds_max_z = 2;
-	public float depth_y = -0.1f;
-
-	[Space(10)]
-	public float decalSize_min_x = 0.25f;
-	public float decalSize_max_x = 2.5f;
-	public float decalSize_min_y = 0.05f;
-	public float decalSize_max_y = 0.25f;
-	public float decalSize_min_z = 0.25f;
-	public float decalSize_max_z = 2.5f;
-	#endregion
-
-	#region Private
-	private Renderer myRenderer;
-
-	private const float DAMPNER = .45f;
-	private const float MIN_VALUE_OFFSET = .1f;
-	#endregion
-
-	// Use this for initialization
-	void Start ()
-	{
-		//The parameters we put in = the size of the platform. But the script spawns cubes from -groundX
-		//to groundX. Same for groundZ. Which doubles the width and length.
-//		groundX /= 2;
-//		groundZ /= 2;
-
-		CreatePlatform(usingContraints);
-	}
-
+    }
+	
 	// Update is called once per frame
 	void Update ()
 	{
-		BreathingEffect (decalColor);
-	}
+        BreathingEffect(decalColor);
+    }
 
-	public float Hermite(float t)
-	{
-		return -t * t * t * 2f + t * t * 3f;
-	}
+    //For clamping inspector to certain vlaues
+//    private void OnValidate()
+//    {
 
-	public Vector3 RandomVector3(float minx, float maxx, float miny, float maxy, float minz, float maxz)
-	{
-		float randSizeX = Random.Range(minx, maxx);
-		float randSizeY = Random.Range(miny, maxy);
-		float randSizeZ = Random.Range(minz, maxz);
+//        decalSize_min_x = Mathf.Clamp(decalSize_min_x, 0.1f, 0.5f);
+//        //decalSize_max_x = 2.5f;
+//        //decalSize_min_y = 0.05f;
+//        //decalSize_max_y = 0.25f;
+//        //decalSize_min_z = 0.25f;
+//        //decalSize_max_z = 2.5f;
+//}
 
-		return new Vector3(randSizeX, randSizeY, randSizeZ);
-	}
+    public float Hermite(float t)
+    {
+        return -t * t * t * 2f + t * t * 3f;
+    }
 
-	//Create a platform using the number of decals
-	public void CreatePlatform(bool constrain = false)
-	{
-		if(constrain == true)
-		{
-			for (int i = 0; i < numDecals; i++)
-			{
-				Transform decal = Instantiate(decalPrefab) as Transform;
 
-				Vector3 randomSize = RandomVector3 (decalSize_min_x, decalSize_max_x, decalSize_min_y, decalSize_max_y, decalSize_min_z, decalSize_max_z);
-				Vector3 randomPos = RandomVector3 (bounds_min_x, bounds_max_x, depth_y, depth_y, bounds_min_z, bounds_max_z);
+    //-------------------------------------------------
+    public Vector3 RandomVector3(float minx, float maxx, float miny, float maxy, float minz, float maxz)
+    {
+        float randSizeX = Random.Range(minx, maxx);
+        float randSizeY = Random.Range(miny, maxy);
+        float randSizeZ = Random.Range(minz, maxz);
 
-				while(IsWithinConstraints(randomSize, randomPos) == false)
-				{
-					randomSize = RandomVector3 (decalSize_min_x, decalSize_max_x, decalSize_min_y, decalSize_max_y, decalSize_min_z, decalSize_max_z);
-					randomPos = RandomVector3 (bounds_min_x, bounds_max_x, depth_y, depth_y, bounds_min_z, bounds_max_z);
-				}
+        return new Vector3(randSizeX, randSizeY, randSizeZ);
+    }
 
-				decal.localScale = randomSize;
-				decal.position = randomPos;
-				decal.parent = this.transform;
-			}
-		}
-		else
-		{
-			for (int i = 0; i < numDecals; i++)
-			{
-				Transform decal = Instantiate(decalPrefab) as Transform;
 
-				Vector3 randomSize = RandomVector3(decalSize_min_x, decalSize_max_x, decalSize_min_y, decalSize_max_y, decalSize_min_z, decalSize_max_z);
-				Vector3 randomPos = RandomVector3(bounds_min_x, bounds_max_x, depth_y, depth_y, bounds_min_z, bounds_max_z);
+    //-------------------------------------------------
+    //Create a platform using the number of decals
+    public void CreatePlatform(bool constrain = false)
+    {
+        if(constrain == true)
+        {
+            for (int i = 0; i < numDecals; i++)
+            {
+                DecalPlatform decal = Instantiate(decalPrefab) as DecalPlatform;
+    
+                Vector3 randomSize = RandomVector3(decalSize_min_x, decalSize_max_x, decalSize_min_y, decalSize_max_y, decalSize_min_z, decalSize_max_z);
+                Vector3 randomPos = RandomVector3(bounds_min_x, bounds_max_x, minDepth_y, maxDepth_y, bounds_min_z, bounds_max_z);
 
-				decal.localScale = randomSize;
-				decal.position = randomPos;
-				decal.parent = this.transform;
-			}
-		}
+                while(IsWithinConstraints(randomSize, randomPos) == false)
+                {
+                    randomSize = RandomVector3(decalSize_min_x, decalSize_max_x, decalSize_min_y, decalSize_max_y, decalSize_min_z, decalSize_max_z);
+                    randomPos = RandomVector3(bounds_min_x, bounds_max_x, minDepth_y, maxDepth_y, bounds_min_z, bounds_max_z);
+                }
 
-		CombineMeshes();
-	}
+                decal.transform.localScale = randomSize;
+                decal.transform.position = randomPos;
+                decal.transform.parent = this.transform;
+                decal.Setup();
 
-	//Combine the multiple meshes into a single mesh
-	//Called after creating the platform
-	public void CombineMeshes()
-	{
+            }
+        }
+        else
+        {
+            for (int i = 0; i < numDecals; i++)
+            {
+                DecalPlatform decal = Instantiate(decalPrefab) as DecalPlatform;
 
-		Material meshMaterial = GetComponentInChildren<MeshRenderer>().material;
+                Vector3 randomSize = RandomVector3(decalSize_min_x, decalSize_max_x, decalSize_min_y, decalSize_max_y, decalSize_min_z, decalSize_max_z);
+                Vector3 randomPos = RandomVector3(bounds_min_x, bounds_max_x, minDepth_y, maxDepth_y, bounds_min_z, bounds_max_z);
 
-		MeshFilter[] meshFilters = GetComponentsInChildren<MeshFilter>();
-		CombineInstance[] combine = new CombineInstance[meshFilters.Length];
-		int j = 0;
-		while (j < meshFilters.Length)
-		{
-			combine[j].mesh = meshFilters[j].sharedMesh;
-			combine[j].transform = meshFilters[j].transform.localToWorldMatrix;
-			meshFilters[j].gameObject.SetActive(false);
-			j++;
-		}
+                decal.transform.localScale = randomSize;
+                decal.transform.position = randomPos;
+                decal.transform.parent = this.transform;
+                decal.Setup();
+            }
+        }
 
-		this.gameObject.AddComponent<MeshFilter>();
-		this.gameObject.AddComponent<MeshRenderer>();
+        CombineMeshes();
+        this.tag = environmentID.ToString();
+    }
 
-		transform.GetComponent<MeshFilter>().mesh = new Mesh();
-		transform.GetComponent<MeshFilter>().mesh.CombineMeshes(combine);
-		transform.gameObject.SetActive(true);
 
-		myRenderer = GetComponent<Renderer>();
-		myRenderer.material = meshMaterial;
-	}
+    //-------------------------------------------------
+    //Combine the multiple meshes into a single mesh
+    //Called after creating the platform
+    public void CombineMeshes()
+    {
 
-	public bool IsWithinConstraints(Vector3 scale, Vector3 position)
-	{
-		bool _isValid = true;
+        Material meshMaterial = GetComponentInChildren<MeshRenderer>().material;
 
-		float min_x = position.x - (scale.x * .4f);
-		float max_x = position.x + (scale.x * .4f);
-		float min_z = position.z - (scale.z * .4f);
-		float max_z = position.z + (scale.z * .4f);
+        MeshFilter[] meshFilters = GetComponentsInChildren<MeshFilter>();
+        CombineInstance[] combine = new CombineInstance[meshFilters.Length];
+        int j = 0;
+        while (j < meshFilters.Length)
+        {
+            combine[j].mesh = meshFilters[j].sharedMesh;
+            combine[j].transform = meshFilters[j].transform.localToWorldMatrix;
+            meshFilters[j].gameObject.SetActive(false);
+            j++;
+        }
 
-		if(min_x < bounds_min_x || max_x > bounds_max_x|| min_z < bounds_min_z|| max_z > bounds_max_z)
-		{
-			_isValid = false;
-		}
-		return _isValid;
-	}
+        this.gameObject.AddComponent<MeshFilter>();
+        this.gameObject.AddComponent<MeshRenderer>();
 
-	//Have the floors glow with a breathing effect
-	public void BreathingEffect(Color baseColor)
-	{
-		float emission = Hermite((Mathf.PingPong(Time.time * DAMPNER, 1.0f))) + MIN_VALUE_OFFSET;
+        transform.GetComponent<MeshFilter>().mesh = new Mesh();
+        transform.GetComponent<MeshFilter>().mesh.CombineMeshes(combine);
+        transform.gameObject.SetActive(true);
 
-		Color finalColor = baseColor * Mathf.LinearToGammaSpace(emission);
-		//Color testColor = Color.Lerp(baseColor, Color.blue, emission);
+        myRenderer = GetComponent<Renderer>();
+        myRenderer.material = meshMaterial;
 
-		myRenderer.material.SetColor("_EmissionColor", finalColor);
-	}
+        this.gameObject.AddComponent<MeshCollider>();
+    }
+
+
+    //-------------------------------------------------
+    public bool IsWithinConstraints(Vector3 scale, Vector3 position)
+    {
+        bool _isValid = true;
+
+        float min_x = position.x - (scale.x * .4f);
+        float max_x = position.x + (scale.x * .4f);
+        float min_z = position.z - (scale.z * .4f);
+        float max_z = position.z + (scale.z * .4f);
+
+        if(min_x < bounds_min_x || max_x > bounds_max_x|| min_z < bounds_min_z|| max_z > bounds_max_z)
+        {
+            _isValid = false;
+        }
+        return _isValid;
+    }
+
+
+    //-------------------------------------------------
+    //Have the floors glow with a breathing effect
+    public void BreathingEffect(Color baseColor)
+    {
+        float emission = Hermite((Mathf.PingPong(Time.time * DAMPNER, 1.0f))) + MIN_VALUE_OFFSET;
+
+        Color finalColor = baseColor * Mathf.LinearToGammaSpace(emission);
+   
+
+        myRenderer.material.SetColor("_EmissionColor", finalColor);
+    } 
 }

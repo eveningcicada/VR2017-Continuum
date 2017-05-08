@@ -38,7 +38,8 @@ public class DiskExitScript : MonoBehaviour {
 
                 inHole = true;
 
-				SceneManager.LoadScene (nextLevel);
+                SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+                //SceneManager.LoadScene (nextLevel);
 			}
 		} else {
 			indicator.gameObject.GetComponent<MeshRenderer> ().material = keyHole;

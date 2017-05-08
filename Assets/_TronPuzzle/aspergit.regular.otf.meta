@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: a4c03a913f3414ca6ac0e521e38bcd27
+timeCreated: 1493846041
+licenseType: Free
+TrueTypeFontImporter:
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: Aspergit
+  fontNames:
+  - Aspergit
+  fallbackFontReferences: []
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
