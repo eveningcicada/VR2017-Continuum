@@ -38,6 +38,10 @@ public class HandController : MonoBehaviour {
             {
                 GameManager.instance._levelManager.SwitchEnvironment();
             }
+
+            if (_hand.controller.GetPressDown(Valve.VR.EVRButtonId.k_EButton_Grip)){
+                disc.GetComponent<Disc>().Teleport();
+            }
         }
 
     }

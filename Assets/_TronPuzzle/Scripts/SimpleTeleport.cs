@@ -30,9 +30,9 @@ public class SimpleTeleport : MonoBehaviour {
     {
         //This code detects if a surface is close enough and if there is then it will remove the rotation
         //constraints so that the disk can tilt a bit before it falls. It's more realistic that way.
-        Ray tiltCheck = new Ray(this.transform.position, Vector3.down);
+        Ray downCheck = new Ray(this.transform.position, Vector3.down);
 
-        if (Physics.Raycast(tiltCheck, 1f) == true)
+        if (Physics.Raycast(downCheck, 1f) == true)
         {
             myRB.constraints = RigidbodyConstraints.None;
         }
@@ -42,11 +42,9 @@ public class SimpleTeleport : MonoBehaviour {
             myRB.constraints = RigidbodyConstraints.FreezeRotationZ;
         }
 
-
-        Ray groundCheck = new Ray(this.transform.position, Vector3.down);
         RaycastHit hitInfo;
 
-        if (Physics.Raycast(groundCheck, out hitInfo, length, GameManager.instance.collisionLayer))
+        if (Physics.Raycast(downCheck, out hitInfo, length, GameManager.instance.collisionLayer))
         {
                 //Getting to here means that the disk is on the floor. Now check for input.
                 if (SteamVR.active == false)

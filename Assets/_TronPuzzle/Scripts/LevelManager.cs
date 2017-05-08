@@ -81,11 +81,13 @@ public class LevelManager : MonoBehaviour {
 
             foreach(Generator gen in activate)
             {
+                //ShiftPlatformsToBind(gen);
                 gen.gameObject.SetActive(true);
             }
 
             foreach(Generator gen in deactivate)
             {
+                //ShiftPlatformsToFloat(gen);
                 gen.gameObject.SetActive(false);
             }
             activeEnv = Generator.EnvironmentID.Env2;
@@ -107,6 +109,40 @@ public class LevelManager : MonoBehaviour {
                 gen.gameObject.SetActive(false);
             }
             activeEnv = Generator.EnvironmentID.Env1;
+            return;
+        }
+    }
+
+    public void ShiftPlatformsToFloat(Generator gen)
+    {
+        DecalPlatform[] _childPlatforms = gen.GetComponentsInChildren<DecalPlatform>();
+
+        if (_childPlatforms != null)
+        {
+            foreach (DecalPlatform dp in _childPlatforms)
+            {
+                dp.FloatStart();
+            }
+        }
+        else
+        {
+            return;
+        }
+    }
+
+    public void ShiftPlatformsToBind(Generator gen)
+    {
+        DecalPlatform[] _childPlatforms = gen.GetComponentsInChildren<DecalPlatform>();
+
+        if (_childPlatforms != null)
+        {
+            foreach (DecalPlatform dp in _childPlatforms)
+            {
+                dp.BindStart();
+            }
+        }
+        else
+        {
             return;
         }
     }

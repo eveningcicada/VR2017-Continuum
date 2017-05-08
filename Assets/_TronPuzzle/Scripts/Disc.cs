@@ -14,6 +14,8 @@ public class Disc : MonoBehaviour {
     private Collider[] _collidersUpAgaisnt = new Collider[DIRECTIONS_CHECKED];
     private Vector3[] _collidedNormals = new Vector3[DIRECTIONS_CHECKED];
 
+    private Ray downCheck;
+
     private const int DIRECTIONS_CHECKED = 6;
     private const int DIRECTION_DOWN = 0;
     private const int DIRECTION_UP = 1;
@@ -39,6 +41,10 @@ public class Disc : MonoBehaviour {
     private void FixedUpdate()
     {
         oldVelocity = myRb.velocity;
+
+        downCheck = new Ray(this.transform.position, Vector3.down);
+        ManageConstraints();
+       
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -75,6 +81,44 @@ public class Disc : MonoBehaviour {
 
         }
 
+    }
+
+    private void ManageConstraints()
+    {
+        //This code detects if a surface is close enough and if there is then it will remove the rotation
+        //constraints so that the disk can tilt a bit before it falls. It's more realistic that way.
+        if (Physics.Raycast(downCheck, 1f) == true)
+        {
+            myRb.constraints = RigidbodyConstraints.None;
+        }
+        else
+        {
+            myRb.constraints = RigidbodyConstraints.FreezeRotationX;
+            myRb.constraints = RigidbodyConstraints.FreezeRotationZ;
+        }
+    }
+
+    public void Teleport()
+    {
+        RaycastHit hitInfo;
+        float length = 0.2f;
+
+        if (Physics.Raycast(downCheck, out hitInfo, length, GameManager.instance.collisionLayer))
+        {
+            //Getting to here means that the disk is on the floor. Now check for input.
+
+            Vector3 temp = hitInfo.point;
+            temp.x -= GameManager.instance._hmd.transform.localPosition.x;
+            temp.z -= GameManager.instance._hmd.transform.localPosition.z;
+
+            GameManager.instance.player.transform.position = temp;
+
+
+            Vector3 temp2 = new Vector3(0f, GameManager.instance._hmd.transform.localPosition.y, 0f);
+            GameManager.instance._hmd.transform.localPosition = temp2;
+                
+            }
+        
     }
 
     //Draw Debugger

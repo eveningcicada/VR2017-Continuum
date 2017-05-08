@@ -5,7 +5,7 @@ using Valve.VR.InteractionSystem;
 
 public class Level_CityWindowLift : MonoBehaviour {
 
-	public Transform lift1, lift2;
+    public Transform lift;
 
 	static float sliderMin = 7.24f;
 	static float sliderMax = 8.04f;
@@ -18,25 +18,25 @@ public class Level_CityWindowLift : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		height = lift1.transform.position.y;
+		height = lift.transform.position.y;
 	}
 	
 	// Update is called once per frame
 	void Update () {
 		newHeight = Remap (this.transform.position.x, sliderMin, sliderMax, height - heightRange, height + heightRange);
 		//We want some animation of the past lift moving up and down
-		if (lift1.position.y < newHeight) {
-			Vector3 temp = new Vector3 (lift1.position.x, lift1.position.y + moveSpeed * Time.deltaTime, lift1.position.z);
-			lift1.position = temp;
+		if (lift.position.y < newHeight) {
+			Vector3 temp = new Vector3 (lift.position.x, lift.position.y + moveSpeed * Time.deltaTime, lift.position.z);
+			lift.position = temp;
 		}
-		if (lift1.position.y > newHeight) {
-			Vector3 temp = new Vector3 (lift1.position.x, lift1.position.y - moveSpeed * Time.deltaTime, lift1.position.z);
-			lift1.position = temp;
+		if (lift.position.y > newHeight) {
+			Vector3 temp = new Vector3 (lift.position.x, lift.position.y - moveSpeed * Time.deltaTime, lift.position.z);
+			lift.position = temp;
 		}
 		//This ensures there's no vibration uo and down when the liftHeight almost equals the newHeight
-		if (Mathf.Abs (lift1.position.y - newHeight) <= moveSpeed * Time.deltaTime) {
-			Vector3 temp = new Vector3 (lift1.position.x, newHeight, lift1.position.z);
-			lift1.position = temp;
+		if (Mathf.Abs (lift.position.y - newHeight) <= moveSpeed * Time.deltaTime) {
+			Vector3 temp = new Vector3 (lift.position.x, newHeight, lift.position.z);
+			lift.position = temp;
 		}
 
 		//Reset the slider if it moves past the min and max values.

@@ -5,7 +5,7 @@ using System.Timers;
 
 public class Generator : MonoBehaviour {
 
-	[SerializeField] Transform decalPrefab;
+	[SerializeField] DecalPlatform decalPrefab;
 
     #region Public
     public enum EnvironmentID
@@ -14,38 +14,46 @@ public class Generator : MonoBehaviour {
         Env1,
         Env2
     }
-
-    [Space(5)]
-    public EnvironmentID environmentID = EnvironmentID.Both;
-
-    [Space(10)]
-    public int numDecals;
-    public Color decalColor;
-    [Space(5)]
-    public bool usingContraints = false;
-
-    [Space(10)]
-    public float bounds_min_x = -2;
-    public float bounds_max_x = 2;
-    public float bounds_min_z = -2;
-    public float bounds_max_z = 2;
-    public float minDepth_y = -0.1f;
-    public float maxDepth_y = -0.1f
-
-    [Space(10)]
-    public float decalSize_min_x = 0.25f;
-    public float decalSize_max_x = 2.5f;
-    public float decalSize_min_y = 0.05f;
-    public float decalSize_max_y = 0.25f;
-    public float decalSize_min_z = 0.25f;
-    public float decalSize_max_z = 2.5f;
     #endregion
 
-    #region Private
-    private Renderer myRenderer;
+    #region Protected
+    [Space(5)]
+    [SerializeField]
+    protected EnvironmentID environmentID = EnvironmentID.Both;
 
-    private const float DAMPNER = .45f;
-    private const float MIN_VALUE_OFFSET = .1f;
+    [Space(10)]
+    [SerializeField]
+    protected int numDecals;
+
+    [SerializeField]
+    protected Color decalColor;
+
+    [Space(5)]
+    [SerializeField]
+    protected bool usingContraints = false;
+
+    [Space(2)]
+    [SerializeField]
+    protected float bounds_min_x = -2,
+        bounds_max_x = 2,
+        bounds_min_z = -2,
+        bounds_max_z = 2,
+        minDepth_y = -0.1f,
+        maxDepth_y = -0.1f;
+
+    [Space(2)]
+    [SerializeField]
+    protected float decalSize_min_x = 0.25f, 
+        decalSize_max_x = 2.5f,
+        decalSize_min_y = 0.05f, 
+        decalSize_max_y = 0.25f, 
+        decalSize_min_z = 0.25f, 
+        decalSize_max_z = 2.5f;
+
+    protected Renderer myRenderer;
+
+    protected const float DAMPNER = .45f;
+    protected const float MIN_VALUE_OFFSET = .1f;
     #endregion
 
     // Use this for initialization
@@ -61,6 +69,7 @@ public class Generator : MonoBehaviour {
         BreathingEffect(decalColor);
     }
 
+    //For clamping inspector to certain vlaues
 //    private void OnValidate()
 //    {
 
@@ -97,7 +106,7 @@ public class Generator : MonoBehaviour {
         {
             for (int i = 0; i < numDecals; i++)
             {
-                Transform decal = Instantiate(decalPrefab) as Transform;
+                DecalPlatform decal = Instantiate(decalPrefab) as DecalPlatform;
     
                 Vector3 randomSize = RandomVector3(decalSize_min_x, decalSize_max_x, decalSize_min_y, decalSize_max_y, decalSize_min_z, decalSize_max_z);
                 Vector3 randomPos = RandomVector3(bounds_min_x, bounds_max_x, minDepth_y, maxDepth_y, bounds_min_z, bounds_max_z);
@@ -108,9 +117,10 @@ public class Generator : MonoBehaviour {
                     randomPos = RandomVector3(bounds_min_x, bounds_max_x, minDepth_y, maxDepth_y, bounds_min_z, bounds_max_z);
                 }
 
-                decal.localScale = randomSize;
-                decal.position = randomPos;
-                decal.parent = this.transform;
+                decal.transform.localScale = randomSize;
+                decal.transform.position = randomPos;
+                decal.transform.parent = this.transform;
+                decal.Setup();
 
             }
         }
@@ -118,14 +128,15 @@ public class Generator : MonoBehaviour {
         {
             for (int i = 0; i < numDecals; i++)
             {
-                Transform decal = Instantiate(decalPrefab) as Transform;
+                DecalPlatform decal = Instantiate(decalPrefab) as DecalPlatform;
 
                 Vector3 randomSize = RandomVector3(decalSize_min_x, decalSize_max_x, decalSize_min_y, decalSize_max_y, decalSize_min_z, decalSize_max_z);
-                Vector3 randomPos = RandomVector3(bounds_min_x, bounds_max_x, depth_y, depth_y, bounds_min_z, bounds_max_z);
+                Vector3 randomPos = RandomVector3(bounds_min_x, bounds_max_x, minDepth_y, maxDepth_y, bounds_min_z, bounds_max_z);
 
-                decal.localScale = randomSize;
-                decal.position = randomPos;
-                decal.parent = this.transform;
+                decal.transform.localScale = randomSize;
+                decal.transform.position = randomPos;
+                decal.transform.parent = this.transform;
+                decal.Setup();
             }
         }
 
@@ -163,7 +174,7 @@ public class Generator : MonoBehaviour {
         myRenderer = GetComponent<Renderer>();
         myRenderer.material = meshMaterial;
 
-        this.gameObject.AddComponent<BoxCollider>();
+        this.gameObject.AddComponent<MeshCollider>();
     }
 
 

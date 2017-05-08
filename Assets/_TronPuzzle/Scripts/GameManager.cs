@@ -7,11 +7,10 @@ public class GameManager : MonoBehaviour {
 
 
     #region Private
-    [SerializeField] GameObject player;
     [SerializeField] GameObject disc;
     #endregion
 
-
+    public GameObject player;
     public LayerMask collisionLayer;
     public LevelManager _levelManager
     {
@@ -54,7 +53,10 @@ public class GameManager : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            _levelManager.SwitchEnvironment();
+        }	
 	}
 
     private void FixedUpdate()
