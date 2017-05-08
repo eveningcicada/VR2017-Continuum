@@ -7,13 +7,11 @@ public class FallDetect : MonoBehaviour {
 
 	[SerializeField] GameObject player;
 	[SerializeField] GameObject disk;
-    [SerializeField] GameObject startingPosition;
-    
 
 	private GameObject _hmd;
 	private float length;
 
-	public LayerMask groundMask;
+	public LayerMask collisionLayer;
 
 	// Use this for initialization
 	void Start () {
@@ -26,7 +24,6 @@ public class FallDetect : MonoBehaviour {
 		//Make the raycast just a bit longer than the height of the player
 		length = _hmd.transform.localPosition.y + 0.1f;
 		//Debug.Log (length);
-
 	}
 	
 	// Update is called once per frame
@@ -34,25 +31,20 @@ public class FallDetect : MonoBehaviour {
 		Ray groundCheck = new Ray (_hmd.transform.position, Vector3.down);
 		RaycastHit hitInfo;
 
-
-		if (Physics.SphereCast (groundCheck, 0.5f, out hitInfo, length, groundMask.value)) {
+		if (Physics.SphereCast (groundCheck, .5f, out hitInfo, length, collisionLayer)) {
 			
 		} else {
-			StartCoroutine (Dead ());
+			StartCoroutine(Dead());
 		}
-		//Debug.Log (length);
-		Debug.DrawRay (_hmd.transform.position, Vector3.down * length);
+
+		//Debug.DrawRay (_hmd.transform.position, Vector3.down * length);
 	}
 
     IEnumerator Dead() {
         SteamVR_Fade.Start (Color.black, 1f);
         yield return new WaitForSeconds(1f);
-        
-		player.transform.position = startingPosition.transform.position;
-		Vector3 temp = new Vector3 (0f, _hmd.transform.localPosition.y, 0f);
-		_hmd.transform.localPosition = temp;
-        
-		disk.transform.position = startingPosition.transform.position;
+        player.transform.position = Vector3.zero;
+        disk.transform.position = new Vector3(0, 0.531f, 0.815f);
         SteamVR_Fade.Start (Color.clear, 1f);
     }
 }
