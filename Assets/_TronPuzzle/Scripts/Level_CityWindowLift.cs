@@ -6,6 +6,9 @@ using Valve.VR.InteractionSystem;
 public class Level_CityWindowLift : MonoBehaviour {
 
     public Transform lift;
+	MeshRenderer liftRenderer;
+	Material regularMat;
+	[SerializeField] Material triPlanerMat;
 
 	static float sliderMin = 7.24f;
 	static float sliderMax = 8.04f;
@@ -19,6 +22,10 @@ public class Level_CityWindowLift : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		height = lift.transform.position.y;
+
+		liftRenderer = lift.GetComponent<MeshRenderer> ();
+		//Store the lift FloorGenerator's material
+		regularMat = liftRenderer.material;
 	}
 	
 	// Update is called once per frame
@@ -33,7 +40,7 @@ public class Level_CityWindowLift : MonoBehaviour {
 			Vector3 temp = new Vector3 (lift.position.x, lift.position.y - moveSpeed * Time.deltaTime, lift.position.z);
 			lift.position = temp;
 		}
-		//This ensures there's no vibration uo and down when the liftHeight almost equals the newHeight
+		//This ensures there's no vibration up and down when the liftHeight almost equals the newHeight
 		if (Mathf.Abs (lift.position.y - newHeight) <= moveSpeed * Time.deltaTime) {
 			Vector3 temp = new Vector3 (lift.position.x, newHeight, lift.position.z);
 			lift.position = temp;
@@ -48,6 +55,15 @@ public class Level_CityWindowLift : MonoBehaviour {
 		if (this.transform.position.x < sliderMin) {
 			Vector3 temp = new Vector3 (sliderMin + 0.01f, this.transform.position.y, this.transform.position.z);
 			this.transform.position = temp;
+		}
+
+		//Make sure you can't teleport when the lift is on
+		if (lift.position.y != newHeight) {
+			lift.gameObject.layer = 0;	//Default
+			liftRenderer.material = triPlanerMat;	//Visual cue you can't teleport
+		} else {
+			lift.gameObject.layer = 10;	//Ground
+			liftRenderer.material = regularMat;		//Visual cue you can teleport
 		}
 	}
 
