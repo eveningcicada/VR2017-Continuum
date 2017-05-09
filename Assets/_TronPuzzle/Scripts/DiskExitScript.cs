@@ -27,7 +27,7 @@ public class DiskExitScript : MonoBehaviour {
 	}
 
 	void HandAttachedUpdate (Hand hand) {
-		if (Vector3.Distance (this.transform.position, indicator.position) <= 0.1) {
+		if (Vector3.Distance (this.transform.position, indicator.position) <= 0.4f) {
 			indicator.gameObject.GetComponent<MeshRenderer> ().material = glow;
 
 			if (hand.GetStandardInteractionButton () == false) {
