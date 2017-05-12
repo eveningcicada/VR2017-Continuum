@@ -42,13 +42,14 @@ public class DecalPlatform : MonoBehaviour {
         if (_isLerping)
         {
             float timeSinceStarted = Time.time - _timeStartedLerping;
-            float percantageComplete = timeSinceStarted / lerpTime;
-            percantageComplete = Mathf.Sin(percantageComplete * Mathf.PI * 0.5f);
+            float percentageComeplete = timeSinceStarted / lerpTime;
+            percentageComeplete = Mathf.Sin(percentageComeplete * Mathf.PI * 0.5f);
 
-            transform.position = Vector3.Lerp(this.transform.position, boundPosition, percantageComplete);
-
-            if(percantageComplete >= 1.0f)
+            transform.position = Vector3.Lerp(this.transform.position, boundPosition, percentageComeplete);
+            
+            if(percentageComeplete >= .9f)
             {
+                Debug.Log(percentageComeplete);
                 BindComplete();
             }
 
@@ -84,5 +85,9 @@ public class DecalPlatform : MonoBehaviour {
         _isLerping = false;
         this.transform.parent = parentGenerator;
         this.gameObject.SetActive(false);
+        if (parentGenerator.gameObject.activeSelf == false)
+        {
+            parentGenerator.gameObject.SetActive(true);
+        }
     }
 }

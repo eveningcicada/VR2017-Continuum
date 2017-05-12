@@ -14,12 +14,21 @@ public class HandController : MonoBehaviour {
 
     public Throwable disc;
 
+    public Transform goal;
+    public bool inGoal;
+
+
 
     // Use this for initialization
     void Start()
     {
         _hand = GetComponent<Hand>();
         _hmd = GameManager.instance._hmd;
+
+        if (goal == null)
+        {
+            goal = GameObject.Find("PlaceDIskHere").GetComponent<Transform>();
+        }
     }
 
     // Update is called once per frame
@@ -44,6 +53,21 @@ public class HandController : MonoBehaviour {
             }
         }
 
+
+        if ((Vector3.Distance(disc.transform.position, goal.position) < 1 ) || Input.GetKeyDown(KeyCode.R))
+        {
+           inGoal = true;
+        }
+        else
+        {
+            inGoal = false;
+        }
+
+        if(inGoal == true)
+        {
+            PlaceInGoal();
+        }
+
     }
 
     private void HandleTriggerClicked()
@@ -63,5 +87,16 @@ public class HandController : MonoBehaviour {
     private void ReloadDisc()
     {
         _hand.AttachObject(disc.gameObject);
+    }
+
+    private void PlaceInGoal()
+    {
+        _hand.DetachObject(disc.gameObject);
+        disc.transform.position = goal.transform.position;
+        disc.transform.rotation = goal.transform.rotation;
+        disc.GetComponent<Rigidbody>().isKinematic = true;
+        StartCoroutine(GameManager.instance.Restart());
+        //StartCoroutine(GameManager.instance.NextLevel(GameManager.instance._levelManager.nextLevel)); 
+        
     }
 }

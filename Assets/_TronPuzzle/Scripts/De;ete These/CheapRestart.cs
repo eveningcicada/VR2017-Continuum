@@ -7,6 +7,7 @@ using UnityEngine.SceneManagement;
 public class CheapRestart : MonoBehaviour {
     public Transform disc;
     public Transform goal;
+    public bool inGoal;
 	
     // Use this for initialization
 	void Start () {
@@ -24,19 +25,27 @@ public class CheapRestart : MonoBehaviour {
         {
             goal = GameObject.Find("PlaceDIskHere").GetComponent<Transform>();
         }
-	if(Vector3.Distance(disc.position,goal.position) < 1 || Input.GetKeyDown(KeyCode.R))
+
+        if (Vector3.Distance(disc.position,goal.position) < 1)
         {
-            StartCoroutine(Restart());
-        }	
-	}
+            inGoal = true;
+        }
+        else{
+            inGoal = false;
+        }
+
+        if(inGoal ==  true || Input.GetKeyDown(KeyCode.R)){
+            //Restart();
+        }
+
+    }
 
 
-    IEnumerator Restart()
+    void Restart()
     {
         SteamVR_Fade.Start(Color.black, 1f);
-        yield return new WaitForSeconds(1f);
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-        //Debug.Log("Im Right");
+        Debug.Log("Im Right");
         SteamVR_Fade.Start(Color.clear, 1f);
     }
 }

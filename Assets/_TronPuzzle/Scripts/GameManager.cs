@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour {
 
@@ -8,6 +9,7 @@ public class GameManager : MonoBehaviour {
 
     #region Private
     [SerializeField] GameObject disc;
+    private bool shouldRestart;
     #endregion
 
     public GameObject player;
@@ -57,6 +59,11 @@ public class GameManager : MonoBehaviour {
         {
             _levelManager.SwitchEnvironment();
         }	
+
+        if(shouldRestart == true)
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
 	}
 
     private void FixedUpdate()
@@ -72,20 +79,26 @@ public class GameManager : MonoBehaviour {
 
         if (Physics.SphereCast(groundCheck, .5f, out hitInfo, length, collisionLayer))
         {
-
+            //Do nothing
         }
         else
         {
-            StartCoroutine(Dead());
+            StartCoroutine(Restart());   
         }
     }
 
-    IEnumerator Dead()
+    public IEnumerator Restart()
     {
         SteamVR_Fade.Start(Color.black, 1f);
-        yield return new WaitForSeconds(1f);
-        player.transform.position = Vector3.zero;
-        disc.transform.position = new Vector3(0, 0.531f, 0.815f);
-        SteamVR_Fade.Start(Color.clear, 1f);
+        yield return new WaitForSeconds(3f);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
+
+    public IEnumerator NextLevel(Scene nextLevel)
+    {
+        SteamVR_Fade.Start(Color.black, 1f);
+        yield return new WaitForSeconds(1.5f);
+        SceneManager.LoadScene(nextLevel.name);
+    }
+
 }

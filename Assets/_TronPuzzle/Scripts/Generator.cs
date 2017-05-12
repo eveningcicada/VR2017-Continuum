@@ -21,6 +21,9 @@ public class Generator : MonoBehaviour {
     [SerializeField]
     protected EnvironmentID environmentID = EnvironmentID.Both;
 
+    [SerializeField]
+    protected bool nullifySpawning;
+
     [Space(10)]
     [SerializeField]
     protected int numDecals;
@@ -59,7 +62,7 @@ public class Generator : MonoBehaviour {
     // Use this for initialization
     void Start ()
 	{
-        CreatePlatform(usingContraints);
+        CreatePlatform(nullifySpawning, usingContraints);
 
     }
 	
@@ -69,7 +72,7 @@ public class Generator : MonoBehaviour {
         BreathingEffect(decalColor);
     }
 
-    //For clamping inspector to certain vlaues
+      //For clamping inspector to certain vlaues
 //    private void OnValidate()
 //    {
 
@@ -100,8 +103,14 @@ public class Generator : MonoBehaviour {
 
     //-------------------------------------------------
     //Create a platform using the number of decals
-    public void CreatePlatform(bool constrain = false)
+    public void CreatePlatform(bool nullify = false, bool constrain = false)
     {
+        if(nullify == true)
+        {
+            this.tag = environmentID.ToString();
+            return;
+        }
+
         if(constrain == true)
         {
             for (int i = 0; i < numDecals; i++)
