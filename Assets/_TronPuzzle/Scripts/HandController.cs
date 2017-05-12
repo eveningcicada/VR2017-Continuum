@@ -6,8 +6,28 @@ using Valve.VR.InteractionSystem;
 
 public class HandController : MonoBehaviour {
 
-    private Hand _hand;
-    private SteamVR_Camera _hmd;
+    private Hand _hand
+    {
+        get
+        {
+            return GetComponent<Hand>();
+        }
+        set
+        {
+            _hand = value;
+        }
+    }
+    private SteamVR_Camera _hmd
+    {
+        get
+        {
+            return GameManager.instance._hmd;
+        }
+        set
+        {
+            _hmd = value;
+        }
+    }
 
     private Valve.VR.EVRButtonId triggerButton = Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger;
     private Valve.VR.EVRButtonId touchpad = Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad;
@@ -22,19 +42,20 @@ public class HandController : MonoBehaviour {
     // Use this for initialization
     void Start()
     {
-        _hand = GetComponent<Hand>();
-        _hmd = GameManager.instance._hmd;
+        //_hand = GetComponent<Hand>();
+        //_hmd = GameManager.instance._hmd;
 
-        if (goal == null)
-        {
-            goal = GameObject.Find("PlaceDIskHere").GetComponent<Transform>();
-        }
+        
     }
 
     // Update is called once per frame
     void Update()
     {
-       
+        if (goal == null)
+        {
+            goal = GameObject.Find("PlaceDIskHere").GetComponent<Transform>();
+        }
+
         if (_hand.controller != null)
         {
 

@@ -12,7 +12,17 @@ public class GameManager : MonoBehaviour {
     private bool shouldRestart;
     #endregion
 
-    public GameObject player;
+    public GameObject player
+    {
+        get
+        {
+            return GameObject.Find("Player");
+        }
+        set
+        {
+            player = value;
+        }
+    }
     public LayerMask collisionLayer;
     public LevelManager _levelManager
     {
