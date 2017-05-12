@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour {
 
@@ -84,8 +85,7 @@ public class GameManager : MonoBehaviour {
     {
         SteamVR_Fade.Start(Color.black, 1f);
         yield return new WaitForSeconds(1f);
-        player.transform.position = Vector3.zero;
-        disc.transform.position = new Vector3(0, 0.531f, 0.815f);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         SteamVR_Fade.Start(Color.clear, 1f);
     }
 }
